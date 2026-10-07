@@ -9,10 +9,16 @@ running = True
 dt = 0
 
 # creating the basket (made once, before the loop)
-basket = pygame.Rect(0, 0, 125, 20)  # left, top, width, height
+basket = pygame.Rect(0, 0, 100, 20)  # left, top, width, height
 basket.midbottom = (screen.get_width() / 2, screen.get_height() - 20)
 basket_x = float(basket.x)  # exact position, because a Rect only stores whole numbers
 basket_speed = 400  # pixels per secondplayer_pos = pygame.Vector2(screen.get_width()/2, screen.get_height()*0.80)
+
+# creating the ball (made once, before the loop)
+ball = pygame.Rect(0, 0, 30, 30)             # left, top, width, height
+ball.midtop = (screen.get_width() / 2, 5)    # centred horizontally, touching the top edge
+ball_colour = "red"                          # TO DO: multiple colours
+ball_speed = 200                             # pixels per second
 
 while running:
     # poll for events
@@ -29,14 +35,17 @@ while running:
         basket_x += basket_speed * dt
 
     # limiting movement of the basket 
-    basket_x = max(0, min(basket_x, screen.get_width() - basket.width))
+    basket_x = max(5, min(basket_x, screen.get_width() - basket.width - 5))
     basket.x = round(basket_x)
 
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("Gray")
 
-    #creating the basket
+    #drawing the basket
     pygame.draw.rect(screen, "chocolate3", basket)
+
+    # drawing the ball
+    pygame.draw.circle(screen, ball_colour, ball.center, ball.width//2)
 
     # flip() the display to put your work on screen
     pygame.display.flip()
