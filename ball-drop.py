@@ -19,14 +19,20 @@ basket.midbottom = (screen.get_width() / 2, screen.get_height() - 20)
 basket_x = float(basket.x)  # exact position, because a Rect only stores whole numbers
 basket_speed = 400  # pixels per second
 
-# creating the ball (made once, before the loop)
-ball = pygame.Rect(0, 0, 30, 30)             # left, top, width, height
-ball.midtop = (screen.get_width() / 2, 5)    # centred horizontally, touching the top edge
-ball_colour = "red"                          # TO DO: multiple colours
+
+# creating the balls
+ball_size = 30
+balls = []                    # every ball currently on screen
+spawn_delay = 1.0             # seconds between new balls
+spawn_timer = spawn_delay     # starts full, so the first ball appears straight away
+
+def make_ball():
+    rect = pygame.Rect(0, 0, ball_size, ball_size)
+    rect.x = random.randint(5, screen.get_width() - ball_size - 5)
+    rect.y = 5
+    return {"rect": rect, "y": float(rect.y), "colour": random.choice(["red", "blue", "green", "yellow"])}
 ball_speed = 200                             # pixels per second
-#random x pos for ball
-ball.x = random.randint(5, screen.get_width() - ball.width - 5)
-ball_y = float(ball.y)
+
 
 while running:
     # poll for events
@@ -46,26 +52,29 @@ while running:
     basket_x = max(5, min(basket_x, screen.get_width() - basket.width - 5))
     basket.x = round(basket_x)
 
-    # making the ball fall
-    ball_y += ball_speed * dt
-    ball.y = round(ball_y)
+    # spawn a new ball every spawn_delay seconds
+    spawn_timer += dt
+    if spawn_timer >= spawn_delay:
+        balls.append(make_ball())
+        spawn_timer = 0
 
-    caught = basket.colliderect(ball)
-    missed = ball.top > screen.get_height()
-    if caught:
-        score += 1
-    if missed:
-        lives -= 1
-    if caught or missed:           # either way, send a new ball from the top
-        ball_y = 5
-        ball.x = random.randint(5, screen.get_width() - ball.width - 5)
+    # move every ball, then check for catches and misses
+    for ball in balls[:]:         # [:] loops over a copy, so removing balls is safe
+        ball["y"] += ball_speed * dt
+        ball["rect"].y = round(ball["y"])
+
+        if basket.colliderect(ball["rect"]):
+            score += 1
+            balls.remove(ball)
+        elif ball["rect"].top > screen.get_height():
+            lives -= 1
+            balls.remove(ball)
         
     if score % 5 == 0 and score != 0:  # every 5 points, increase speed
         ball_speed += 20
         ball_speed = min(ball_speed, 500)  # limit the maximum speed
         basket_speed += 20
         basket_speed = min(basket_speed, 500)  # limit the maximum speed
-        ball_colour = random.choice(["red", "green", "blue", "yellow", "purple"])  # change ball colour
         score += 1  # to avoid increasing speed again on the next frame
         lives += 1  # give the player an extra life for every 5 points
     if lives == 0:
@@ -83,8 +92,8 @@ while running:
     #drawing the basket
     pygame.draw.rect(screen, "chocolate3", basket)
 
-    # drawing the ball
-    pygame.draw.circle(screen, ball_colour, ball.center, ball.width//2)
+    for ball in balls:
+        pygame.draw.circle(screen, ball["colour"], ball["rect"].center, ball_size // 2)
 
     # flip() the display to put your work on screen
     pygame.display.flip()
