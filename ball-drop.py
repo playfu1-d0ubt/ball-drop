@@ -1,4 +1,5 @@
 import pygame
+import random
 
 # pygame setup
 pygame.init()
@@ -7,6 +8,9 @@ screen = pygame.display.set_mode(size=(680,680), flags=pygame.SCALED, )
 clock = pygame.time.Clock()
 running = True
 dt = 0
+
+score=0
+lives=3
 
 # creating the basket (made once, before the loop)
 basket = pygame.Rect(0, 0, 100, 20)  # left, top, width, height
@@ -19,6 +23,9 @@ ball = pygame.Rect(0, 0, 30, 30)             # left, top, width, height
 ball.midtop = (screen.get_width() / 2, 5)    # centred horizontally, touching the top edge
 ball_colour = "red"                          # TO DO: multiple colours
 ball_speed = 200                             # pixels per second
+#random x pos for ball
+ball.x = random.randint(5, screen.get_width()-5)
+
 
 while running:
     # poll for events
@@ -37,6 +44,25 @@ while running:
     # limiting movement of the basket 
     basket_x = max(5, min(basket_x, screen.get_width() - basket.width - 5))
     basket.x = round(basket_x)
+
+    # making the ball fall
+    stop = screen.get_height() - 40
+    ball.y += ball_speed * dt
+    if ball.y > stop:
+        ball.y = stop
+        #detecting ball 
+        if basket.colliderect(ball) == True:
+            score += 1
+            ball.y = 5
+            ball.x = random.randint(5, screen.get_width()-5)
+        else:
+            lives -= 1
+            ball.y = 5
+            ball.x = random.randint(5, screen.get_width()-5)
+
+    if lives == 0:
+       running = False
+    
 
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("Gray")
