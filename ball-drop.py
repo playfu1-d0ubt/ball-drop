@@ -11,12 +11,13 @@ dt = 0
 
 score=0
 lives=3
+font = pygame.font.Font(None, 36)
 
 # creating the basket (made once, before the loop)
 basket = pygame.Rect(0, 0, 100, 20)  # left, top, width, height
 basket.midbottom = (screen.get_width() / 2, screen.get_height() - 20)
 basket_x = float(basket.x)  # exact position, because a Rect only stores whole numbers
-basket_speed = 400  # pixels per secondplayer_pos = pygame.Vector2(screen.get_width()/2, screen.get_height()*0.80)
+basket_speed = 400  # pixels per second
 
 # creating the ball (made once, before the loop)
 ball = pygame.Rect(0, 0, 30, 30)             # left, top, width, height
@@ -24,8 +25,8 @@ ball.midtop = (screen.get_width() / 2, 5)    # centred horizontally, touching th
 ball_colour = "red"                          # TO DO: multiple colours
 ball_speed = 200                             # pixels per second
 #random x pos for ball
-ball.x = random.randint(5, screen.get_width()-5)
-
+ball.x = random.randint(5, screen.get_width() - ball.width - 5)
+ball_y = float(ball.y)
 
 while running:
     # poll for events
@@ -46,26 +47,38 @@ while running:
     basket.x = round(basket_x)
 
     # making the ball fall
-    stop = screen.get_height() - 40
-    ball.y += ball_speed * dt
-    if ball.y > stop:
-        ball.y = stop
-        #detecting ball 
-        if basket.colliderect(ball) == True:
-            score += 1
-            ball.y = 5
-            ball.x = random.randint(5, screen.get_width()-5)
-        else:
-            lives -= 1
-            ball.y = 5
-            ball.x = random.randint(5, screen.get_width()-5)
+    ball_y += ball_speed * dt
+    ball.y = round(ball_y)
 
+    caught = basket.colliderect(ball)
+    missed = ball.top > screen.get_height()
+    if caught:
+        score += 1
+    if missed:
+        lives -= 1
+    if caught or missed:           # either way, send a new ball from the top
+        ball_y = 5
+        ball.x = random.randint(5, screen.get_width() - ball.width - 5)
+        
+    if score % 5 == 0 and score != 0:  # every 5 points, increase speed
+        ball_speed += 20
+        ball_speed = min(ball_speed, 500)  # limit the maximum speed
+        basket_speed += 20
+        basket_speed = min(basket_speed, 500)  # limit the maximum speed
+        ball_colour = random.choice(["red", "green", "blue", "yellow", "purple"])  # change ball colour
+        score += 1  # to avoid increasing speed again on the next frame
+        lives += 1  # give the player an extra life for every 5 points
     if lives == 0:
        running = False
-    
 
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("Gray")
+
+    # display the score and lives on the screen
+    score_text = font.render(f"Score: {score}", True, "black")
+    lives_text = font.render(f"Lives: {lives}", True, "black")
+    screen.blit(score_text, (10, 10))
+    screen.blit(lives_text, (10, 50))
 
     #drawing the basket
     pygame.draw.rect(screen, "chocolate3", basket)
@@ -81,4 +94,5 @@ while running:
     # independent physics.
     dt = clock.tick(60) / 1000
 
+print("Final score:", score)
 pygame.quit()
