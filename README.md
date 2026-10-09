@@ -2,7 +2,7 @@
 
 A catch-the-falling-balls game made with Python and Pygame. Move the basket, catch as many balls as you can, and don't run out of lives.
 
-It's a Python version of a Scratch game I made earlier ("Basic Ball Drop").
+It's a Python version of a Scratch game I made earlier [Basic Ball Drop](https://scratch.mit.edu/projects/1388327647/).
 
 ## How to play
 
