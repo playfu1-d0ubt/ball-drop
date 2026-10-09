@@ -25,7 +25,7 @@ It's a Python version of a Scratch game I made earlier [Basic Ball Drop](https:/
 You need Python 3 and Pygame.
 
 ```bash
-git clone git@github.com:YOUR-USERNAME/ball-drop.git
+git clone git@github.com:playfu1-d0ubt/ball-drop.git
 cd ball-drop
 python3 -m venv venv
 source venv/bin/activate
