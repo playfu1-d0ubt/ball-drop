@@ -23,7 +23,7 @@ basket_speed = 400  # pixels per second
 # creating the balls
 ball_size = 30
 balls = []                    # every ball currently on screen
-spawn_delay = 1.0             # seconds between new balls
+spawn_delay = 1.25            # seconds between new balls
 spawn_timer = spawn_delay     # starts full, so the first ball appears straight away
 
 def make_ball():
