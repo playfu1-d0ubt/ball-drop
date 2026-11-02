@@ -1,7 +1,8 @@
 # Ball Drop - catch the falling balls in the basket.
 # Move with A/D or the left/right arrow keys. Press R to restart after game over.
-import pygame
 import random
+
+import pygame
 
 # pygame setup
 pygame.init()
